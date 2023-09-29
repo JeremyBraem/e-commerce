@@ -9,14 +9,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class FirstController extends AbstractController
 {
-    #[Route('/first/{name}', name: 'first')]
+    #[Route('/first', name: 'first')]
 
-    public function first(HttpFoundationRequest $req, $name): Response
+    public function first(HttpFoundationRequest $req): Response
     {
-        // dd($req);
         return $this->render('first/index.html.twig', [
             'controller_name' => 'FirstController',
-            'name' => $name,
+            'name' => 'Jérémy',
         ]);
     }
 
@@ -27,6 +26,12 @@ class FirstController extends AbstractController
         return $this->render('first/index.html.twig', [
             'result' => $result
         ]);
+    }
+
+    #[Route('/template', name: 'template')]
+    public function template()
+    {
+        return $this->render('template.html.twig');
     }
 
 }
