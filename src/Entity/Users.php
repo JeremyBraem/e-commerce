@@ -34,11 +34,11 @@ class Users
     #[ORM\OneToOne(inversedBy: 'users', cascade: ['persist', 'remove'])]
     private ?Profil $profile = null;
 
-    #[ORM\ManyToMany(targetEntity: hobby::class)]
+    #[ORM\ManyToMany(targetEntity: Hobby::class)]
     private Collection $hobbie;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    private ?job $job = null;
+    private ?Job $Job = null;
 
     
 
@@ -101,14 +101,14 @@ class Users
     }
 
     /**
-     * @return Collection<int, hobby>
+     * @return Collection<int, Hobby>
      */
     public function getHobbie(): Collection
     {
         return $this->hobbie;
     }
 
-    public function addHobbie(hobby $hobbie): static
+    public function addHobbie(Hobby $hobbie): static
     {
         if (!$this->hobbie->contains($hobbie)) {
             $this->hobbie->add($hobbie);
@@ -117,21 +117,21 @@ class Users
         return $this;
     }
 
-    public function removeHobbie(hobby $hobbie): static
+    public function removeHobbie(Hobby $hobbie): static
     {
         $this->hobbie->removeElement($hobbie);
 
         return $this;
     }
 
-    public function getJob(): ?job
+    public function getJob(): ?Job
     {
-        return $this->job;
+        return $this->Job;
     }
 
-    public function setJob(?job $job): static
+    public function setJob(?Job $Job): static
     {
-        $this->job = $job;
+        $this->Job = $Job;
 
         return $this;
     }

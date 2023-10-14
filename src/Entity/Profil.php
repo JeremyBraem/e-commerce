@@ -25,7 +25,7 @@ class Profil
     #[ORM\Column(length: 255)]
     private ?string $rs = null;
 
-    #[ORM\OneToOne(mappedBy: 'Profile', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'profile', cascade: ['persist', 'remove'])]
     private ?Users $users = null;
 
     public function getId(): ?int
@@ -77,5 +77,10 @@ class Profil
         $this->users = $users;
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->rs. " ".$this->url;
     }
 }

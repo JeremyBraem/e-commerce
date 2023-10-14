@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Users;
+use App\Form\PersonneType;
 use App\Repository\UsersRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -75,19 +76,13 @@ class PersonneController extends AbstractController
     public function addPersonne(ManagerRegistry $doctrine): Response
     {
         $entityManager = $doctrine->getManager();
-        $personne = new Users();
-        $personne->setFistname('Braem');
-        $personne->setName('Jérémy');
-        $personne->setAge('23');
 
-        //Ajout
-        $entityManager->persist($personne);
+        $personne = new Users;
 
-        //Execute
-        $entityManager->flush();
+        $form = $this->createForm(PersonneType::class, $personne);
 
-        return $this->render('personne/detail.html.twig', [
-            'personne' => $personne,
+        return $this->render('personne/add-personne.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 
