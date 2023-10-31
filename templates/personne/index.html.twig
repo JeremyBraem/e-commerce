@@ -12,7 +12,8 @@
 					<h6 class="card-subtitle mb-2 text-muted">{{ personne.name }}
 						{{ personne.fistname }}</h6>
 					<p class="card-text">{{ personne.age }}</p>
-					<a href="{{ path('personne.detail', {'id': personne.id}) }}" class="card-link">Card link</a>
+					<a href="{{ path('personne.detail', {'id': personne.id}) }}" class="card-link">Lien</a>
+					<a href="{{ path('personne.edit', {'id': personne.id}) }}" class="card-link">Modifer</a>
 					<a href="{{ path('personne.delete', {'id': personne.id}) }}" class="card-link">Supprimer</a>
 				</div>
 			</div>

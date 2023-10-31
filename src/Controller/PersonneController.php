@@ -8,8 +8,12 @@ use App\Repository\UsersRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
 
 #[Route('personne')]
 class PersonneController extends AbstractController
@@ -72,18 +76,70 @@ class PersonneController extends AbstractController
 
     }
 
-    #[Route('/add', name: 'personne.add')]
-    public function addPersonne(ManagerRegistry $doctrine): Response
+    #[Route('/edit/{id?0}', name: 'personne.edit')]
+    public function addPersonne(Users $personne = null, ManagerRegistry $doctrine, Request $req, SluggerInterface $slugger): Response
     {
-        $entityManager = $doctrine->getManager();
+        $new = false;
 
-        $personne = new Users;
+        if(!$personne)
+        {
+            $new = true;
+            $personne = new Users;
+        }
 
         $form = $this->createForm(PersonneType::class, $personne);
 
-        return $this->render('personne/add-personne.html.twig', [
-            'form' => $form->createView()
-        ]);
+        $form->handleRequest($req);
+
+        if($form->isSubmitted())
+        {
+            $photo = $form->get('photo')->getData();
+
+            if ($photo) 
+            {
+                $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$photo->guessExtension();
+
+                try 
+                {
+                    $photo->move(
+                        $this->getParameter('personne_directory'),
+                        $newFilename
+                    );
+                }
+                catch (FileException $e) 
+                {
+
+                }
+
+                $personne->setImage($newFilename);
+            }
+
+            $manager = $doctrine->getManager();
+            $manager->persist($personne);
+
+            $manager->flush();
+
+            if($new)
+            {
+                $message = "a été ajouté avec succès";
+            }
+            else
+            {
+                $message = "a été modifié avec succès";
+            }
+
+            $this->addFlash('succes', $personne->getName(). $message);
+
+            return $this->redirectToRoute('personne.list.all');
+        }
+        else
+        {
+            return $this->render('personne/add-personne.html.twig', [
+                'form' => $form->createView()
+            ]);
+        }
     }
 
     #[Route('/delete/{id}', name: 'personne.delete')]

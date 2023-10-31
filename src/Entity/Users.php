@@ -38,7 +38,10 @@ class Users
     private Collection $hobbie;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    private ?Job $Job = null;
+    private ?Job $job = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
 
     
 
@@ -126,12 +129,24 @@ class Users
 
     public function getJob(): ?Job
     {
-        return $this->Job;
+        return $this->job;
     }
 
-    public function setJob(?Job $Job): static
+    public function setJob(?Job $job): static
     {
-        $this->Job = $Job;
+        $this->job = $job;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }
