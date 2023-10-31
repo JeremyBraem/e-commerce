@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
@@ -23,12 +24,17 @@ class Users
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Veillez remplir le champ")]
+    #[Assert\Length(min: 4, minMessage: "Veillez avoir au moins 4 charactères")]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Veillez remplir le champ")]
+    #[Assert\Length(min: 4, minMessage: "Veillez avoir au moins 4 charactères")]
     private ?string $fistname = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
+    #[Assert\NotBlank(message: "Veillez remplir le champ")]
     private ?int $age = null;
 
     #[ORM\OneToOne(inversedBy: 'users', cascade: ['persist', 'remove'])]

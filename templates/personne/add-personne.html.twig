@@ -10,12 +10,20 @@
 
 {% block body %}
 
- 	{{ form_start(form) }}
+ 	{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 	<div class="row">
 		<div class="col">{{ form_row(form.name) }}</div>
 		<div class="col">{{ form_row(form.fistname) }}</div>
 	</div>
 	{{ form_rest(form) }}
 
-	{% endblock %}
+{% endblock %}
 
+{% block js %}
+	<script>
+		$(document).ready(function() 
+		{
+			$('.select2').select2();
+		});
+	</script>
+{% endblock %}

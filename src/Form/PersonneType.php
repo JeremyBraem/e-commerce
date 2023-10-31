@@ -23,16 +23,17 @@ class PersonneType extends AbstractType
             ->add('name')
             ->add('fistname')
             ->add('age')
-            // ->add('createdAt')
-            // ->add('updatedAt')
             ->add('profile', EntityType::class, [
-                'expanded' => true,
+                'expanded' => false,
                 'class' => Profil::class,
                 'multiple' => false,
-                'required' => false
+                'required' => false,
+                'attr' => [
+                    'class' => 'select2'
+                ]
             ])
             ->add('hobbie', EntityType::class, [
-                'expanded' => true,
+                'expanded' => false,
                 'class' => Hobby::class,
                 'multiple' => true,
                 'query_builder' => function(EntityRepository $er)
@@ -40,18 +41,23 @@ class PersonneType extends AbstractType
                     return $er->createQueryBuilder('h')
                         ->orderBy('h.designation', 'ASC');
                 },
-                'choice_label' => 'designation'
+                'choice_label' => 'designation',
+                'required' => false,
+                'attr' => [
+                    'class' => 'select2'
+                ]
             ])
-            ->add('job')
+            ->add('job', EntityType::class, [
+                'required' => false,
+                'class' => Job::class,
+                'attr' => [
+                    'class' => 'select2'
+                ]
+            ])
             ->add('photo', FileType::class, [
                 'label' => 'Votre image de profil (Des fichiers images uniquement)',
-                // unmapped means that this field is not associated to any entity property
                 'mapped' => false,
-                // make it optional so you don't have to re-upload the PDF file
-                // every time you edit the Product details
                 'required' => false,
-                // unmapped fields can't define their validation using annotations
-                // in the associated entity, so you can use the PHP constraint classes
                 'constraints' => [
                     new File([
                         'maxSize' => '1024k',

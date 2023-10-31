@@ -91,7 +91,7 @@ class PersonneController extends AbstractController
 
         $form->handleRequest($req);
 
-        if($form->isSubmitted())
+        if($form->isSubmitted() && $form->isValid())
         {
             $photo = $form->get('photo')->getData();
 
