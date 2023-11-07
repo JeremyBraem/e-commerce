@@ -60,7 +60,7 @@ class PersonneType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new File([
-                        'maxSize' => '1024k',
+                        'maxSize' => '10000000',
                         'mimeTypes' => [
                             'image/gif',
                             'image/jpeg',

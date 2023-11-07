@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Users;
 use App\Form\PersonneType;
 use App\Repository\UsersRepository;
+use App\Service\MailerService;
+use App\Service\UploaderService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -77,7 +79,7 @@ class PersonneController extends AbstractController
     }
 
     #[Route('/edit/{id?0}', name: 'personne.edit')]
-    public function addPersonne(Users $personne = null, ManagerRegistry $doctrine, Request $req, SluggerInterface $slugger): Response
+    public function addPersonne(Users $personne = null, ManagerRegistry $doctrine, Request $req, UploaderService $uploaderService, MailerService $mailer): Response
     {
         $new = false;
 
@@ -97,23 +99,9 @@ class PersonneController extends AbstractController
 
             if ($photo) 
             {
-                $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$photo->guessExtension();
+                $directory = $this->getParameter('personne_directory');
 
-                try 
-                {
-                    $photo->move(
-                        $this->getParameter('personne_directory'),
-                        $newFilename
-                    );
-                }
-                catch (FileException $e) 
-                {
-
-                }
-
-                $personne->setImage($newFilename);
+                $personne->setImage($uploaderService->uploadFile($photo, $directory));
             }
 
             $manager = $doctrine->getManager();
@@ -130,7 +118,11 @@ class PersonneController extends AbstractController
                 $message = "a été modifié avec succès";
             }
 
-            $this->addFlash('succes', $personne->getName(). $message);
+            $mailMessage = $personne->getFistname().' '.$personne->getName().' '.$message;
+
+            $this->addFlash('success', $personne->getName(). $message);
+
+            $mailer->sendEmail(content: $mailMessage);
 
             return $this->redirectToRoute('personne.list.all');
         }
