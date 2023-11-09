@@ -15,9 +15,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-
-#[Route('personne')]
+#[
+    Route('personne'),
+    IsGranted("ROLE_USER")
+]
 class PersonneController extends AbstractController
 {
     #[Route('/', name: 'personne.list')]
@@ -44,7 +47,9 @@ class PersonneController extends AbstractController
         return $this->render('personne/stat.html.twig', ['stat' => $stat[0], 'ageMin' => $ageMin, 'ageMax' => $ageMax]);
     }
 
-    #[Route('/all/{page?1}', name: 'personne.list.all')]
+    #[
+        Route('/all/{page?1}', name: 'personne.list.all'),
+    ]
     public function all(ManagerRegistry $doc, $page): Response
     {
         $nbr = 15;
@@ -78,7 +83,10 @@ class PersonneController extends AbstractController
 
     }
 
-    #[Route('/edit/{id?0}', name: 'personne.edit')]
+    #[
+        Route('/edit/{id?0}', name: 'personne.edit'),
+        IsGranted("ROLE_ADMIN")
+    ]
     public function addPersonne(Users $personne = null, ManagerRegistry $doctrine, Request $req, UploaderService $uploaderService, MailerService $mailer): Response
     {
         $new = false;
@@ -135,7 +143,10 @@ class PersonneController extends AbstractController
         }
     }
 
-    #[Route('/delete/{id}', name: 'personne.delete')]
+    #[
+        Route('/delete/{id}', name: 'personne.delete'),
+        IsGranted("ROLE_ADMIN")
+    ]
     public function deletePersonne(ManagerRegistry $doc ,Users $personne = null): RedirectResponse
     {
         if($personne)
