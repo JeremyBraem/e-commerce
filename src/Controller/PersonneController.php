@@ -3,11 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\Users;
+use App\Events\AddPersonneEvent;
 use App\Form\PersonneType;
 use App\Repository\UsersRepository;
+use App\Service\Helpers;
 use App\Service\MailerService;
 use App\Service\UploaderService;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +27,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 ]
 class PersonneController extends AbstractController
 {
+    public function __construct(private LoggerInterface $logger, private Helpers $helpers, private EventDispatcherInterface $dispacher){}
+
     #[Route('/', name: 'personne.list')]
     public function index(ManagerRegistry $doc): Response
     {
@@ -126,6 +132,12 @@ class PersonneController extends AbstractController
             $manager->persist($personne);
 
             $manager->flush();
+
+            if($new)
+            {
+                $addPersonneEvent = new AddPersonneEvent($personne);
+                $this->dispacher->dispatch($addPersonneEvent, AddPersonneEvent::ADD_PERSONNE_EVENT);
+            }
 
             $mailMessage = $personne->getFistname().' '.$personne->getName().' '.$message;
 
